@@ -38,7 +38,12 @@ export default Vue.extend({
       type: Array,
       default: () => [
         { id: 0, text: "Hola", participant: "internal" },
-        { id: 1, text: `Hola adsfadsf
+        { id: 10, text: "Hola", participant: "internal" },
+        { id: 110, text: "Hola", participant: "internal" },
+        { id: 11110, text: "Hola", participant: "internal" },
+        { id: 230, text: "Hola", participant: "internal" },
+        { id: 40, text: "Hola", participant: "internal" },
+        { id: 51, text: `Hola adsfadsf
         
        asdfadsfadfAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
@@ -49,7 +54,8 @@ sfdasdf
        adsfadsfadfs
        
        asfdadsfafd
-        `, participant: "external" },
+        `
+        , participant: "external" },
       ]
     }
   },
@@ -101,7 +107,7 @@ sfdasdf
 
   .message-list {
     padding: 0 8px;
-    height: max-content;
+    // height: max-content;
     display: flex;
     flex-direction: column;
     overflow: scroll;
@@ -138,12 +144,9 @@ sfdasdf
 
 
       .text {
-        // display: flex;
         max-width: 300px;
         white-space: pre-wrap;
-        word-wrap: anywhere;
-        
-        // line-break: anywhere;
+        word-break: break-all;
       }
 
       .time {
