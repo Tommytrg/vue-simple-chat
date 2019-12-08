@@ -1,8 +1,13 @@
 <template>
   <div class="chat">
+    <div class="date">Hoy</div>
     <div class="message-list">
-      <div v-for="msg in msgList" :key="msg.id" :class="[msg.participant]">
-        <p>{{ msg.text }}</p>
+      <div v-for="msg in msgList" :key="msg.id" class="message" :class="[msg.participant]">
+        <div v-if="msg.participant === 'internal'" class="time"> 12.20 </div>
+        <div class="text" :class="[msg.participant]">
+          <p>{{ msg.text }}</p>
+        </div>
+        <div v-if="msg.participant === 'external'" class="time"> 12.20 </div>
       </div>
     </div>
     <form class="message-bar" v-on:submit.prevent="onSubmit">
@@ -33,7 +38,18 @@ export default Vue.extend({
       type: Array,
       default: () => [
         { id: 0, text: "Hola", participant: "internal" },
-        { id: 1, text: "Hola", participant: "external" }
+        { id: 1, text: `Hola adsfadsf
+        
+       asdfadsfadfAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+
+sfdasdf
+       adsf
+       asdf
+       adsfadsfadfs
+       
+       asfdadsfafd
+        `, participant: "external" },
       ]
     }
   },
@@ -71,28 +87,73 @@ export default Vue.extend({
   border: 1px solid black;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: auto 250px auto;
   height: 335px;
   justify-content: center;
   padding: 8px 32px;
   width: 536px;
 
+  .date {
+    font-size: 14px;
+    font-weight: 900;
+    text-align: center;
+  }
+
   .message-list {
+    padding: 0 8px;
     height: max-content;
     display: flex;
     flex-direction: column;
+    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 8px 0;
 
-    .internal, .external {
-      border: 1px solid black;
+    .message {
       display: flex;
-    }
+      align-content: flex-end;
 
-    .internal {
-      align-self: flex-end;
-    }
+      .internal,
+      .external {
+        display: flex;
+        padding: 8px 16px 8px 16px;
+        border: 1px solid black;
+        display: flex;
+        border-radius: 28px;
+        box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.25);
+        
+        p {
+          padding: 0;
+          margin: 0;
+        }
+      }
 
-    .external {
-      align-self: flex-start;
+      &.internal {
+        justify-content: flex-end;
+      }
+
+      &.external {
+        justify-content: flex-start;
+      }
+
+
+      .text {
+        // display: flex;
+        max-width: 300px;
+        white-space: pre-wrap;
+        word-wrap: anywhere;
+        
+        // line-break: anywhere;
+      }
+
+      .time {
+        display: flex;
+        align-self: end;
+        font-size: 12px;
+        color: #aaa;
+        font-weight: 300;
+        margin: 0 8px;
+      }
     }
   }
 
@@ -114,7 +175,7 @@ export default Vue.extend({
       grid-template-rows: 1fr;
       max-height: 80px;
       outline: none;
-      overflow-y: scroll;
+
     }
 
     .hidden {
