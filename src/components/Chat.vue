@@ -12,20 +12,24 @@
           {{ formatDate(msg.date) }}
         </div>
         <div class="message" :class="[msg.participant]">
-          <div v-if="msg.participant === 'internal'" class="time">12.20</div>
+          <div v-if="msg.participant === 'internal'" class="time">{{ formatTime(msg.date) }}</div>
           <div class="text" :class="[msg.participant]">
             <p>{{ msg.text }}</p>
           </div>
-          <div v-if="msg.participant === 'external'" class="time">12.20</div>
+          <div v-if="msg.participant === 'external'" class="time">{{ formatTime(msg.date) }}</div>
         </div>
       </div>
     </div>
     <form class="message-bar" v-on:submit.prevent="onSubmit">
       <textarea v-model="internalMessage" class="hidden" />
       <div
+        tabindex="0"
         contenteditable="true"
+
+
         class="user-input"
         ref="messageInput"
+
         @click="setFocus"
         @keyup.prevent.shift.13="addCarriageReturn"
         @input="write"
@@ -45,87 +49,55 @@ import calendar from "dayjs/plugin/calendar";
 import "dayjs/locale/es";
 
 dayjs.extend(calendar);
+
 type Message = {
-  id: number;
-  text: string;
-  participant: "internal" | "external";
-  time: string;
-  date: string;
-};
+  id: number
+  text: string
+  participant: "internal" | "external"
+  date: number 
+}
 
 export default Vue.extend({
   name: "Chat",
   props: {
+    today: {
+      type: String
+    },
+    yesterday: {
+      type: String
+    },
     placeholder: {
       type: String,
       default: "Write a message..."
     },
     messages: {
       type: Array,
-      default: () => [
-        {
-          id: 110,
-          text: "Hola",
-          participant: "internal",
-          time: "10.20",
-          date: 1575148557000
-        },
-        {
-          id: 11111,
-          text: "Hola",
-          participant: "internal",
-          time: "10.20",
-          date: 1575321357000
-        },
-        {
-          id: 11116,
-          text: "Hola",
-          participant: "internal",
-          time: "10.20",
-          date: 1575580557000
-        },
-        {
-          id: 230,
-          text: "Hola",
-          participant: "internal",
-          time: "10.20",
-          date: 1575839757000
-        },
-        {
-          id: 40,
-          text: "Hola",
-          participant: "internal",
-          time: "10.20",
-          date: 1575926157000
-        },
-        {
-          id: 51,
-          text: `Hola adsfadsf
-        
-       asdfadsfadfAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
-
-sfdasdf
-       adsf
-       asdf
-       adsfadsfadfs
-       
-       asfdadsfafd
-        `,
-          participant: "external",
-          time: "10.20",
-          date: 1576012557000
-        }
-      ]
     }
   },
+
+  mounted() {
+    this.scrollMessageListDown()
+  },
+  updated() {
+    this.scrollMessageListDown()
+  },
+
   data() {
     return {
+      isMessageSent: false,
       internalMessage: "",
       message: this.placeholder
     };
   },
+  watch: {
+    messages() {
+      this.scrollMessageListDown()
+    }
+  },
   methods: {
+    scrollMessageListDown() {
+      (this.$refs.messageList as HTMLElement).scrollTop = (this.$refs.messageList as HTMLElement).scrollHeight
+    },
     formatTime(time: Date) {
       return dayjs(time).format("hh:mm");
     },
@@ -134,10 +106,10 @@ sfdasdf
       return dayjs(date)
         .locale("en")
         .calendar(undefined, {
-          sameDay: "[Today]",
-          lastDay: "[Yesterday]", // The day before ( Yesterday at 2:30 AM )
-          lastWeek: "dddd", // Last week ( Last Monday at 2:30 AM )
-          sameElse: "DD/MM/YYYY" // Everything else ( 7/10/2011 )
+          sameDay: this.today ? `[${this.today}]` : "[Today]",
+          lastDay: this.yesterday ? `[${this.yesterday}]` : "[Yesterday]",
+          lastWeek: "dddd",
+          sameElse: "DD/MM/YYYY"
         });
     },
     isDifferentDate(index: number) {
@@ -147,38 +119,33 @@ sfdasdf
           (this.messages as Array<Message>)[index - 1].date
       );
     },
-    checkInView(container: any, element: any, partial: boolean = true) {
-      //Get container properties
-      let cHeight = container.clientHeight;
-      let cTop = container.scrollTop;
-      let cBottom = cTop + cHeight;
-
-      //Get element properties
-      let eTop = element.offsetTop;
-      let eBottom = eTop + element.clientHeight;
-
-      //Check if in view
-      let isTotal = eTop >= 0 && eBottom <= cHeight;
-      let isPartial =
-        partial && ((eTop < 0 && eBottom > 0) || (eTop > 0 && eTop <= cHeight));
-
-      //Return outcome
-      return isTotal || isPartial;
-    },
     addCarriageReturn(event: Event) {
       event.preventDefault();
+    
     },
-    setFocus(target: HTMLElement) {
+    setFocus() {
       if (this.message === this.placeholder) {
         this.message = "";
       }
     },
     write(input: { target: HTMLElement }) {
+      if (this.isMessageSent) {
+        this.message = ''
+        input.target.innerText = input.target.innerText.replace(this.placeholder, '')
+        this.isMessageSent = false
+      }
+
       this.internalMessage = input.target.innerText;
     },
     onSubmit(e: Event) {
-      e.preventDefault();
-      this.$emit("onSendMessage", this.internalMessage);
+      // e.preventDefault();
+      if (this.internalMessage.trim()) {
+        this.$emit("send", this.internalMessage.trim());
+        (this.$refs.messageInput as HTMLElement).innerText = this.placeholder
+        this. isMessageSent = true
+        this.message = '' as string
+        this.scrollMessageListDown()
+      }
     }
   }
 });
@@ -186,9 +153,10 @@ sfdasdf
 
 <style lang="scss">
 .chat {
+  font-family: Arial, Helvetica, sans-serif;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 275px auto;
+  grid-template-rows: 275px 48px;
   height: 335px;
   justify-content: center;
   padding: 8px 32px;
@@ -217,7 +185,7 @@ sfdasdf
       .internal,
       .external {
         display: flex;
-        padding: 8px 16px 8px 16px;
+        padding: 16px 16px 16px 16px;
         border: 1px solid black;
         display: flex;
         border-radius: 28px;
@@ -233,7 +201,6 @@ sfdasdf
         justify-content: flex-end;
 
         .text {
-          
         }
       }
 
@@ -269,19 +236,31 @@ sfdasdf
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-rows: auto;
-    max-height: 72px;
-    min-height: 32px;
-    padding: 8px 16px 8px 24px;
+    // min-height: 32px;
+    padding: 8px 16px 8px 16px;
     width: 472px;
 
     .user-input {
-      align-items: center;
-      color: black;
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-template-rows: 1fr;
-      max-height: 80px;
+      resize: none;
+      border: none;
       outline: none;
+      border-bottom-left-radius: 10px;
+      box-sizing: border-box;
+      padding: 4px;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.33;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: #565867;
+      -webkit-font-smoothing: antialiased;
+      overflow: scroll;
+      bottom: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      bottom: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     .hidden {
