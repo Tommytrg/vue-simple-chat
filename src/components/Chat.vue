@@ -1,17 +1,16 @@
 <template>
   <div class="chat">
-    <div
-      class="message-list"
-      ref="messageList"
-    >
+    <div class="message-list" ref="messageList">
       <div
-        v-for="(msg, index) in msgList"
+        v-for="(msg, index) in messages"
         :key="msg.id"
         class="row"
         :ref="`message-${index}`"
         :data-index="index"
       >
-        <div v-if="isDifferentDate(index)" class="date">{{ formatDate(msg.date) }}</div>
+        <div v-if="isDifferentDate(index)" class="date">
+          {{ formatDate(msg.date) }}
+        </div>
         <div class="message" :class="[msg.participant]">
           <div v-if="msg.participant === 'internal'" class="time">12.20</div>
           <div class="text" :class="[msg.participant]">
@@ -40,24 +39,28 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue"
-import dayjs from 'dayjs'
-import calendar from 'dayjs/plugin/calendar'
-import 'dayjs/locale/es'
+import Vue from "vue";
+import dayjs from "dayjs";
+import calendar from "dayjs/plugin/calendar";
+import "dayjs/locale/es";
 
-dayjs.extend(calendar)
+dayjs.extend(calendar);
 type Message = {
-  id: number,
-  text: string,
-  participant: 'internal' | 'external'
-  time: string,
-  date: string
-}
+  id: number;
+  text: string;
+  participant: "internal" | "external";
+  time: string;
+  date: string;
+};
 
 export default Vue.extend({
   name: "Chat",
   props: {
-    msgList: {
+    placeholder: {
+      type: String,
+      default: "Write a message..."
+    },
+    messages: {
       type: Array,
       default: () => [
         {
@@ -72,7 +75,7 @@ export default Vue.extend({
           text: "Hola",
           participant: "internal",
           time: "10.20",
-          date: 1575321357000 
+          date: 1575321357000
         },
         {
           id: 11116,
@@ -117,25 +120,32 @@ sfdasdf
     }
   },
   data() {
-    const defaultMessage = 'Write a message'
     return {
       internalMessage: "",
-      message: defaultMessage,
-      placeholder: defaultMessage
-    }
+      message: this.placeholder
+    };
   },
   methods: {
+    formatTime(time: Date) {
+      return dayjs(time).format("hh:mm");
+    },
     formatDate(date: Date) {
-      dayjs().calendar(dayjs(date))
-      return dayjs(date).locale('en').calendar(undefined, {
-        sameDay: '[Today]', 
-        lastDay: '[Yesterday]', // The day before ( Yesterday at 2:30 AM )
-        lastWeek: 'dddd', // Last week ( Last Monday at 2:30 AM )
-        sameElse: 'DD/MM/YYYY' // Everything else ( 7/10/2011 )
-      })
+      dayjs().calendar(dayjs(date));
+      return dayjs(date)
+        .locale("en")
+        .calendar(undefined, {
+          sameDay: "[Today]",
+          lastDay: "[Yesterday]", // The day before ( Yesterday at 2:30 AM )
+          lastWeek: "dddd", // Last week ( Last Monday at 2:30 AM )
+          sameElse: "DD/MM/YYYY" // Everything else ( 7/10/2011 )
+        });
     },
     isDifferentDate(index: number) {
-      return index === 0 || (this.msgList as Array<Message>)[index].date !== (this.msgList as Array<Message>)[index - 1].date
+      return (
+        index === 0 ||
+        (this.messages as Array<Message>)[index].date !==
+          (this.messages as Array<Message>)[index - 1].date
+      );
     },
     checkInView(container: any, element: any, partial: boolean = true) {
       //Get container properties
@@ -157,8 +167,6 @@ sfdasdf
     },
     addCarriageReturn(event: Event) {
       event.preventDefault();
-      console.log("----");
-      // this.message += '\n '
     },
     setFocus(target: HTMLElement) {
       if (this.message === this.placeholder) {
@@ -223,10 +231,19 @@ sfdasdf
 
       &.internal {
         justify-content: flex-end;
+
+        .text {
+          
+        }
       }
 
       &.external {
         justify-content: flex-start;
+
+        .text {
+          background: black;
+          color: white;
+        }
       }
 
       .text {
@@ -277,6 +294,9 @@ sfdasdf
       background: transparent;
       font-weight: bold;
       outline: none;
+      padding-left: 16px;
+      border-left: 1px solid #aaa;
+      margin: 0;
 
       &:active {
         border: none;
