@@ -95,6 +95,10 @@ export default Vue.extend({
     }
   },
   methods: {
+    goToInputEnd(input: any) {
+      input.scrollLeft = input.scrollWidth;
+      input.setSelectionRange(input.value.length, input.value.length )
+    },
     scrollMessageListDown() {
       (this.$refs.messageList as HTMLElement).scrollTop = (this.$refs.messageList as HTMLElement).scrollHeight
     },
@@ -129,6 +133,7 @@ export default Vue.extend({
       }
     },
     write(input: { target: HTMLElement }) {
+      // this.goToInputEnd(this.$refs.messageInput)
       if (this.isMessageSent) {
         this.message = ''
         input.target.innerText = input.target.innerText.replace(this.placeholder, '')
