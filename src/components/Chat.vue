@@ -44,90 +44,23 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import dayjs from "dayjs";
-import calendar from "dayjs/plugin/calendar";
-import "dayjs/locale/es";
+import Vue from 'vue'
+import dayjs from 'dayjs'
+import calendar from 'dayjs/plugin/calendar'
+import setAtEndOfContentEditable from '@/setAtEndOfContenteditable'
+import 'dayjs/locale/es'
 
-dayjs.extend(calendar);
+dayjs.extend(calendar)
 
 type Message = {
-  id: number;
-  text: string;
-  participant: "internal" | "external";
-  date: number;
-};
-
-let voidNodeTags = [
-  "AREA",
-  "BASE",
-  "BR",
-  "COL",
-  "EMBED",
-  "HR",
-  "IMG",
-  "INPUT",
-  "KEYGEN",
-  "LINK",
-  "MENUITEM",
-  "META",
-  "PARAM",
-  "SOURCE",
-  "TRACK",
-  "WBR",
-  "BASEFONT",
-  "BGSOUND",
-  "FRAME",
-  "ISINDEX"
-];
-
-function canContainText(node: Node) {
-  if (node.nodeType == 1) {
-    //is an element node
-    return !voidNodeTags.includes(node.nodeName);
-  } else {
-    //is not an element node
-    return false;
-  }
-}
-
-function getLastChildElement(el: any) {
-  var lc = el.lastChild;
-  while (lc && lc.nodeType != 1) {
-    if (lc.previousSibling) lc = lc.previousSibling;
-    else break;
-  }
-  return lc;
-}
-//Based on Nico Burns's answer
-function setEndOfContenteditable(contentEditableElement: any) {
-  while (
-    getLastChildElement(contentEditableElement) &&
-    canContainText(getLastChildElement(contentEditableElement as ChildNode))
-  ) {
-    contentEditableElement = getLastChildElement(contentEditableElement);
-  }
-
-  var range, selection;
-  if (document.createRange) {
-    //Firefox, Chrome, Opera, Safari, IE 9+
-    range = document.createRange(); //Create a range (a range is a like the selection but invisible)
-    range.selectNodeContents(contentEditableElement); //Select the entire contents of the element with the range
-    range.collapse(false); //collapse the range to the end point. false means collapse to end rather than the start
-    selection = window.getSelection(); //get the selection object (allows you to change selection)
-    selection.removeAllRanges(); //remove any selections already made
-    selection.addRange(range); //make the range you have just created the visible selection
-  } else if (document.selection) {
-    //IE 8 and lower
-    range = document.body.createTextRange(); //Create a range (a range is a like the selection but invisible)
-    range.moveToElementText(contentEditableElement); //Select the entire contents of the element with the range
-    range.collapse(false); //collapse the range to the end point. false means collapse to end rather than the start
-    range.select(); //Select the range (make it the visible selection
-  }
+  id: number
+  text: string
+  participant: 'internal' | 'external'
+  date: number
 }
 
 export default Vue.extend({
-  name: "Chat",
+  name: 'Chat',
   props: {
     today: {
       type: String
@@ -137,96 +70,95 @@ export default Vue.extend({
     },
     placeholder: {
       type: String,
-      default: "Write a message..."
+      default: 'Write a message...'
     },
     messages: {
       type: Array
     }
   },
 
-  mounted() {
-    this.scrollMessageListDown();
+  mounted () {
+    this.scrollMessageListDown()
   },
-  updated() {
-    this.scrollMessageListDown();
+  updated () {
+    this.scrollMessageListDown()
   },
 
-  data() {
+  data () {
     return {
       isMessageSent: false,
-      internalMessage: "",
+      internalMessage: '',
       message: this.placeholder
-    };
+    }
   },
   watch: {
-    messages() {
-      this.scrollMessageListDown();
+    messages () {
+      this.scrollMessageListDown()
     }
   },
   methods: {
-    goToInputEnd(input: any) {
-      input.scrollLeft = input.scrollWidth;
-      input.setSelectionRange(input.value.length, input.value.length);
+    goToInputEnd (input: any) {
+      input.scrollLeft = input.scrollWidth
+      input.setSelectionRange(input.value.length, input.value.length)
     },
-    scrollMessageListDown() {
-      (this.$refs.messageList as HTMLElement).scrollTop = (this.$refs
-        .messageList as HTMLElement).scrollHeight;
+    scrollMessageListDown () {
+      ;(this.$refs.messageList as HTMLElement).scrollTop = (this.$refs
+        .messageList as HTMLElement).scrollHeight
     },
-    formatTime(time: Date) {
-      return dayjs(time).format("hh:mm");
+    formatTime (time: Date) {
+      return dayjs(time).format('hh:mm')
     },
-    formatDate(date: Date) {
-      dayjs().calendar(dayjs(date));
+    formatDate (date: Date) {
+      dayjs().calendar(dayjs(date))
       return dayjs(date)
-        .locale("en")
+        .locale('en')
         .calendar(undefined, {
-          sameDay: this.today ? `[${this.today}]` : "[Today]",
-          lastDay: this.yesterday ? `[${this.yesterday}]` : "[Yesterday]",
-          lastWeek: "dddd",
-          sameElse: "DD/MM/YYYY"
-        });
+          sameDay: this.today ? `[${this.today}]` : '[Today]',
+          lastDay: this.yesterday ? `[${this.yesterday}]` : '[Yesterday]',
+          lastWeek: 'dddd',
+          sameElse: 'DD/MM/YYYY'
+        })
     },
-    isDifferentDate(index: number) {
+    isDifferentDate (index: number) {
       return (
         index === 0 ||
         (this.messages as Array<Message>)[index].date !==
           (this.messages as Array<Message>)[index - 1].date
-      );
+      )
     },
-    addCarriageReturn(event: Event) {
-      event.preventDefault();
+    addCarriageReturn (event: Event) {
+      event.preventDefault()
     },
-    setFocus() {
+    setFocus () {
       if (this.message === this.placeholder) {
-        this.message = "";
+        this.message = ''
       }
     },
-    write(input: { target: HTMLElement }) {
+    write (input: { target: HTMLElement }) {
       // this.goToInputEnd(this.$refs.messageInput)
       if (this.isMessageSent) {
-        this.message = "";
+        this.message = ''
         input.target.innerText = input.target.innerText.replace(
           this.placeholder,
-          ""
-        );
-        this.isMessageSent = false;
-        setEndOfContenteditable(this.$refs.messageInput)
+          ''
+        )
+        this.isMessageSent = false
+        setAtEndOfContentEditable(this.$refs.messageInput)
       }
 
-      this.internalMessage = input.target.innerText;
+      this.internalMessage = input.target.innerText
     },
-    onSubmit(e: Event) {
-      // e.preventDefault();
+    onSubmit (e: Event) {
       if (this.internalMessage.trim()) {
-        this.$emit("send", this.internalMessage.trim());
-        (this.$refs.messageInput as HTMLElement).innerText = this.placeholder;
-        this.isMessageSent = true;
-        this.message = "" as string;
-        this.scrollMessageListDown();
+        this.$emit('send', this.internalMessage.trim())
+        ;(this.$refs.messageInput as HTMLElement).innerText = this.placeholder
+        this.isMessageSent = true
+        this.message = '' as string
+        this.scrollMessageListDown()
       }
     }
   }
-});
+})
 </script>
 
 <style lang="scss">
