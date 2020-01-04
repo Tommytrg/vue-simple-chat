@@ -12,11 +12,15 @@
           {{ formatDate(msg.date) }}
         </div>
         <div class="message" :class="[msg.participant]">
-          <div v-if="msg.participant === 'internal'" class="time">{{ formatTime(msg.date) }}</div>
+          <div v-if="msg.participant === 'internal'" class="time">
+            {{ formatTime(msg.date) }}
+          </div>
           <div class="text" :class="[msg.participant]">
             <p>{{ msg.text }}</p>
           </div>
-          <div v-if="msg.participant === 'external'" class="time">{{ formatTime(msg.date) }}</div>
+          <div v-if="msg.participant === 'external'" class="time">
+            {{ formatTime(msg.date) }}
+          </div>
         </div>
       </div>
     </div>
@@ -25,11 +29,8 @@
       <div
         tabindex="0"
         contenteditable="true"
-
-
         class="user-input"
         ref="messageInput"
-
         @click="setFocus"
         @keyup.prevent.shift.13="addCarriageReturn"
         @input="write"
@@ -51,10 +52,78 @@ import "dayjs/locale/es";
 dayjs.extend(calendar);
 
 type Message = {
-  id: number
-  text: string
-  participant: "internal" | "external"
-  date: number 
+  id: number;
+  text: string;
+  participant: "internal" | "external";
+  date: number;
+};
+
+let voidNodeTags = [
+  "AREA",
+  "BASE",
+  "BR",
+  "COL",
+  "EMBED",
+  "HR",
+  "IMG",
+  "INPUT",
+  "KEYGEN",
+  "LINK",
+  "MENUITEM",
+  "META",
+  "PARAM",
+  "SOURCE",
+  "TRACK",
+  "WBR",
+  "BASEFONT",
+  "BGSOUND",
+  "FRAME",
+  "ISINDEX"
+];
+
+function canContainText(node: Node) {
+  if (node.nodeType == 1) {
+    //is an element node
+    return !voidNodeTags.includes(node.nodeName);
+  } else {
+    //is not an element node
+    return false;
+  }
+}
+
+function getLastChildElement(el: any) {
+  var lc = el.lastChild;
+  while (lc && lc.nodeType != 1) {
+    if (lc.previousSibling) lc = lc.previousSibling;
+    else break;
+  }
+  return lc;
+}
+//Based on Nico Burns's answer
+function setEndOfContenteditable(contentEditableElement: any) {
+  while (
+    getLastChildElement(contentEditableElement) &&
+    canContainText(getLastChildElement(contentEditableElement as ChildNode))
+  ) {
+    contentEditableElement = getLastChildElement(contentEditableElement);
+  }
+
+  var range, selection;
+  if (document.createRange) {
+    //Firefox, Chrome, Opera, Safari, IE 9+
+    range = document.createRange(); //Create a range (a range is a like the selection but invisible)
+    range.selectNodeContents(contentEditableElement); //Select the entire contents of the element with the range
+    range.collapse(false); //collapse the range to the end point. false means collapse to end rather than the start
+    selection = window.getSelection(); //get the selection object (allows you to change selection)
+    selection.removeAllRanges(); //remove any selections already made
+    selection.addRange(range); //make the range you have just created the visible selection
+  } else if (document.selection) {
+    //IE 8 and lower
+    range = document.body.createTextRange(); //Create a range (a range is a like the selection but invisible)
+    range.moveToElementText(contentEditableElement); //Select the entire contents of the element with the range
+    range.collapse(false); //collapse the range to the end point. false means collapse to end rather than the start
+    range.select(); //Select the range (make it the visible selection
+  }
 }
 
 export default Vue.extend({
@@ -71,15 +140,15 @@ export default Vue.extend({
       default: "Write a message..."
     },
     messages: {
-      type: Array,
+      type: Array
     }
   },
 
   mounted() {
-    this.scrollMessageListDown()
+    this.scrollMessageListDown();
   },
   updated() {
-    this.scrollMessageListDown()
+    this.scrollMessageListDown();
   },
 
   data() {
@@ -91,16 +160,17 @@ export default Vue.extend({
   },
   watch: {
     messages() {
-      this.scrollMessageListDown()
+      this.scrollMessageListDown();
     }
   },
   methods: {
     goToInputEnd(input: any) {
       input.scrollLeft = input.scrollWidth;
-      input.setSelectionRange(input.value.length, input.value.length )
+      input.setSelectionRange(input.value.length, input.value.length);
     },
     scrollMessageListDown() {
-      (this.$refs.messageList as HTMLElement).scrollTop = (this.$refs.messageList as HTMLElement).scrollHeight
+      (this.$refs.messageList as HTMLElement).scrollTop = (this.$refs
+        .messageList as HTMLElement).scrollHeight;
     },
     formatTime(time: Date) {
       return dayjs(time).format("hh:mm");
@@ -125,7 +195,6 @@ export default Vue.extend({
     },
     addCarriageReturn(event: Event) {
       event.preventDefault();
-    
     },
     setFocus() {
       if (this.message === this.placeholder) {
@@ -135,9 +204,13 @@ export default Vue.extend({
     write(input: { target: HTMLElement }) {
       // this.goToInputEnd(this.$refs.messageInput)
       if (this.isMessageSent) {
-        this.message = ''
-        input.target.innerText = input.target.innerText.replace(this.placeholder, '')
-        this.isMessageSent = false
+        this.message = "";
+        input.target.innerText = input.target.innerText.replace(
+          this.placeholder,
+          ""
+        );
+        this.isMessageSent = false;
+        setEndOfContenteditable(this.$refs.messageInput)
       }
 
       this.internalMessage = input.target.innerText;
@@ -146,10 +219,10 @@ export default Vue.extend({
       // e.preventDefault();
       if (this.internalMessage.trim()) {
         this.$emit("send", this.internalMessage.trim());
-        (this.$refs.messageInput as HTMLElement).innerText = this.placeholder
-        this. isMessageSent = true
-        this.message = '' as string
-        this.scrollMessageListDown()
+        (this.$refs.messageInput as HTMLElement).innerText = this.placeholder;
+        this.isMessageSent = true;
+        this.message = "" as string;
+        this.scrollMessageListDown();
       }
     }
   }

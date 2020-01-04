@@ -21,13 +21,13 @@ export default Vue.extend({
       this.messages.push({
         text: msg,
         id: 1000000,
-        participant: 'internal',
+        participant: "internal",
         date: Date.now(),
-        time: '0',
-      })
+        time: "0"
+      });
     }
   },
-  data () {
+  data() {
     return {
       messages: [
         {
@@ -84,7 +84,7 @@ sfdasdf
           date: 1576012557000
         }
       ]
-    }
+    };
   },
   components: {
     Chat
