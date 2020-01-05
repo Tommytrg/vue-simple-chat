@@ -1,6 +1,7 @@
 import vue from 'rollup-plugin-vue'
 import typescript from 'rollup-plugin-typescript'
-
+import commonjs from 'rollup-plugin-commonjs'
+console.log(---)
 // export default {
 //   input: 'src/MyComponent.vue',
 //   output: {
@@ -24,15 +25,19 @@ export default [
     input: 'src/index.ts',
     output: {
       format: 'esm',
-      file: 'dist/library.esm.js'
+      file: 'dist/vue-simple-chat.esm.js',
+      globals: {
+        vue: 'Vue'
+      }
     },
     plugins: [
+    commonjs(),
     typescript({
       tsconfig: false,
       experimentalDecorators: true,
       module: 'es2015'
     }),
-      vue()
+      vue(),
     ]
   },
   // SSR build.
@@ -40,15 +45,19 @@ export default [
     input: 'src/index.ts',
     output: {
       format: 'cjs',
-      file: 'dist/library.ssr.js'
+      file: 'dist/vue-simple-chat.ssr.js',
+      globals: {
+        vue: 'Vue'
+      }
     },
     plugins: [
+      commonjs(),
     typescript({
       tsconfig: false,
       experimentalDecorators: true,
       module: 'es2015'
     }),
-      vue({ template: { optimizeSSR: true } })
+      vue({ template: { optimizeSSR: true } }),
     ]
   },
   // Browser build.
@@ -56,15 +65,19 @@ export default [
     input: 'src/wrapper.ts',
     output: {
       format: 'iife',
-      file: 'dist/library.js'
+      file: 'dist/vue-simple-chat.js',
+      globals: {
+        vue: 'Vue'
+      }
     },
     plugins: [
+      commonjs(),
     typescript({
       tsconfig: false,
       experimentalDecorators: true,
       module: 'es2015'
     }),
-      vue()
+      vue(),
     ]
   }
 ]

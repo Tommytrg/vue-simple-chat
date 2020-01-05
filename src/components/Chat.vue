@@ -47,7 +47,7 @@
 import Vue from 'vue'
 import dayjs from 'dayjs'
 import calendar from 'dayjs/plugin/calendar'
-import setAtEndOfContentEditable from '@/setAtEndOfContenteditable'
+import setAtEndOfContentEditable from '../setAtEndOfContenteditable'
 import 'dayjs/locale/es'
 
 dayjs.extend(calendar)

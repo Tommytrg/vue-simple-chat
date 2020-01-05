@@ -1,5 +1,5 @@
 import Chat from './components/Chat.vue'
 
-export {
-  Chat,
-}
+export { Chat }
+
+export default Chat
