@@ -2,10 +2,9 @@
   "name": "vue-simple-chat",
   "version": "0.0.1",
   "private": true,
-  "main": "./dist/vue-simple-chat.ssr.js",
-  "module": "./dist/vue-simple-chat.esm.js",
-  "browser": "./dist/vue-simple-chat.js",
-  "unpkg": "./dist/vue-simple-chat.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.esm.js",
+  "unpkg": "./dist/iife.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "rollup -c --environment BUILD:production",

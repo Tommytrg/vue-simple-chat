@@ -4,7 +4,8 @@ import { Config } from 'bili'
 const config: Config = {
   plugins: {
     vue: {
-      runtimeHelpers: true
+      runtimeHelpers: true,
+      css: true
     },
   },
   input: 'src/index.ts',
