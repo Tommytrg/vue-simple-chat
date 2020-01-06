@@ -6,8 +6,7 @@ module.exports = {
   input: 'src/index.ts',
   plugins: {
     vue: {
-      css: true
+      css:false
     }
   }
-};
-      // runtimeHelpers: true,
+}

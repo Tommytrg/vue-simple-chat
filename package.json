@@ -3,10 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "main": "./dist/index.js",
+  "module": "./dist/index.umd.js",
+  "unpkg": "./dist/index.iife.js",
+  "jsdelivr": "./dist/index.iife.js",
+  "files": ["dist"],
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "rollup -c --environment BUILD:production",
-    "bili": "bili --name index --plugin vue --vue.css false",
+    "bili": "bili --bundle-node-modules --format umd,cjs,iife,esm --module-name VueSimpleChat",
     "test:unit": "vue-cli-service test:unit",
     "fmt": "prettier-standard --check --lint '**/*.{ts,vue}'",
     "fmt!": "prettier-standard --lint '**/*.{ts,vue}'"
