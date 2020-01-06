@@ -3,12 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "main": "./dist/index.js",
-  "module": "./dist/index.esm.js",
-  "unpkg": "./dist/iife.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "rollup -c --environment BUILD:production",
-    "bili": "bili",
+    "bili": "bili --name index --plugin vue --vue.css false",
     "test:unit": "vue-cli-service test:unit",
     "fmt": "prettier-standard --check --lint '**/*.{ts,vue}'",
     "fmt!": "prettier-standard --lint '**/*.{ts,vue}'"
