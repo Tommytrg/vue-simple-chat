@@ -1,4 +1,4 @@
-import Chat from './components/Chat.vue'
+import Chat from './Chat.vue'
 
 export default {
  install(Vue: any, options: any) {
