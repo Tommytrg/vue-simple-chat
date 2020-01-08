@@ -8,9 +8,8 @@
   "jsdelivr": "./dist/index.iife.js",
   "files": ["dist"],
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "rollup -c --environment BUILD:production",
-    "bili": "bili --bundle-node-modules --format umd,cjs,iife,esm --module-name VueSimpleChat",
+    "serve": "vue-cli-service serve example/main.ts",
+    "build": "bili --bundle-node-modules --format umd,cjs,iife,esm --module-name VueSimpleChat",
     "test:unit": "vue-cli-service test:unit",
     "fmt": "prettier-standard --check --lint '**/*.{ts,vue}'",
     "fmt!": "prettier-standard --lint '**/*.{ts,vue}'"

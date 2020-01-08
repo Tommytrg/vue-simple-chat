@@ -16,7 +16,7 @@
     ],
     "paths": {
       "@/*": [
-        "src/*"
+        "src/*",
       ]
     },
     "lib": [
@@ -27,11 +27,13 @@
     ]
   },
   "include": [
+    "example/**/*.vue",
+    "example/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx", "example/main.ts"
   ],
   "exclude": [
     "node_modules"

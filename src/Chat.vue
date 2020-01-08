@@ -47,7 +47,7 @@
 import Vue from 'vue'
 import dayjs from 'dayjs'
 import calendar from 'dayjs/plugin/calendar'
-import setAtEndOfContentEditable from '../setAtEndOfContenteditable'
+import setAtEndOfContentEditable from './setAtEndOfContenteditable'
 import 'dayjs/locale/es'
 
 dayjs.extend(calendar)
@@ -62,10 +62,10 @@ type Message = {
 export default Vue.extend({
   name: 'Chat',
   props: {
-    today: {
+    todayLiteral: {
       type: String
     },
-    yesterday: {
+    yesterdayLiteral: {
       type: String
     },
     placeholder: {
@@ -113,8 +113,8 @@ export default Vue.extend({
       return dayjs(date)
         .locale('en')
         .calendar(undefined, {
-          sameDay: this.today ? `[${this.today}]` : '[Today]',
-          lastDay: this.yesterday ? `[${this.yesterday}]` : '[Yesterday]',
+          sameDay: this.todayLiteral ? `[${this.todayLiteral}]` : '[Today]',
+          lastDay: this.yesterdayLiteral ? `[${this.yesterdayLiteral}]` : '[Yesterday]',
           lastWeek: 'dddd',
           sameElse: 'DD/MM/YYYY'
         })
