@@ -85,6 +85,7 @@ export default Vue.extend({
   },
 
   data () {
+    console.log('messagse', this.messages)
     return {
       isMessageSent: false,
       internalMessage: '',
@@ -93,6 +94,7 @@ export default Vue.extend({
   },
   watch: {
     messages () {
+      console.log('messagse', this.messages)
       this.scrollMessageListDown()
     }
   },
@@ -119,6 +121,7 @@ export default Vue.extend({
           sameElse: 'DD/MM/YYYY'
         })
     },
+    // TODO: compare the formatted date
     isDifferentDate (index: number) {
       return (
         index === 0 ||
